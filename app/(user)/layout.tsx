@@ -1,5 +1,3 @@
-import Navbar from '@/components/Navbar';
-import Sidebar from '@/components/Sidebar';
 import { Providers } from '@/components/providers';
 import { Toaster } from '@/components/ui/sonner';
 import { checkAuth } from '@/lib/auth/utils';
