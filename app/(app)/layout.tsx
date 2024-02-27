@@ -11,7 +11,7 @@ export default async function AppLayout({
 }) {
   await checkAuth();
   return (
-    <main>
+    <>
       <ClerkProvider>
         <div className="flex h-screen">
           <Sidebar />
@@ -23,5 +23,5 @@ export default async function AppLayout({
       </ClerkProvider>
 
       <Toaster richColors />
-    </main>)
+    </>)
 }
