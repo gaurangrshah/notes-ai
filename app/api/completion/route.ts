@@ -1,8 +1,9 @@
 import { OpenAIApi, Configuration } from "openai-edge";
 import { OpenAIStream, StreamingTextResponse } from "ai";
+import { env } from "@/lib/env.mjs";
 // /api/completion
 const config = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: env.OPENAI_API_KEY,
 });
 
 const openai = new OpenAIApi(config);
@@ -25,7 +26,7 @@ export async function POST(req: Request) {
         `,
       },
     ],
-    stream: true,
+    stream: true, // allows openai to stream the response
   });
   const stream = OpenAIStream(response);
   return new StreamingTextResponse(stream);

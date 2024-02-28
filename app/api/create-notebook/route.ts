@@ -6,8 +6,6 @@ import { generateImage, generateImagePrompt } from "@/lib/openai";
 import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 
-// export const runtime = "edge"; // cannot use edge runtime bc something depends on path an other nodejs modules
-
 export async function POST(req: Request) {
   const { userId } = auth();
   if (!userId) {
@@ -21,7 +19,7 @@ export async function POST(req: Request) {
       status: 500,
     });
   }
-  const image_url = await generateImage(image_description);
+  const image_url = await generateImage(image_description, name);
   if (!image_url) {
     return new NextResponse("failed to generate image ", {
       status: 500,

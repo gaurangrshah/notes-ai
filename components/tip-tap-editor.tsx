@@ -55,11 +55,17 @@ const TipTapEditor = ({ note }: Props) => {
     onUpdate: ({ editor }) => {
       setEditorState(editor.getHTML());
     },
+    editorProps: {
+      attributes: {
+        class: 'prose dark:prose-invert prose-sm sm:prose-base lg:prose-lg xl:prose-2xl m-5 focus:outline-none',
+      }
+    }
   });
   const lastCompletion = React.useRef("");
 
   React.useEffect(() => {
     if (!completion || !editor) return;
+    // diff the completed text from the original to make sure we only insert the completion text
     const diff = completion.slice(lastCompletion.current.length);
     lastCompletion.current = completion;
     editor.commands.insertContent(diff);
@@ -88,7 +94,7 @@ const TipTapEditor = ({ note }: Props) => {
         </Button>
       </div>
 
-      <div className="prose prose-sm w-full mt-4">
+      <div className="w-full mt-4">
         <EditorContent editor={editor} />
       </div>
       <div className="h-4"></div>

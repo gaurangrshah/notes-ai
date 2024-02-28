@@ -21,18 +21,6 @@ type Props = {};
 export function CreateNoteDialog(props: Props) {
   const router = useRouter();
   const [input, setInput] = React.useState("");
-  const uploadToFreeimage = useMutation({
-    mutationFn: async (noteId: string) => {
-      const response = await fetch("/api/upload-to-freeimage", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ noteId }),
-      });
-      return response.json() as Promise<{ url: string }>;
-    },
-  });
   const createNotebook = useMutation({
     mutationFn: async () => {
       const response = await fetch("/api/create-notebook", {
@@ -56,19 +44,8 @@ export function CreateNoteDialog(props: Props) {
     }
     createNotebook.mutate(undefined, {
       onSuccess: ({ note_id }) => {
-        console.log("created new note:", { note_id });
         // hit another endpoint to upload the temp dalle-3 url to permanent url
-        uploadToFreeimage.mutate(note_id, {
-          onSuccess: ({ url }) => {
-            toast("Successfully created new notebook w/ thumbnail");
-            console.log("uploaded to freeimage:", { url });
-          },
-          onError: (error) => {
-            console.error(error);
-            toast("Failed to upload to freeimage");
-          },
-
-        });
+        toast("Notebook created successfully"); // @TODO: REMOVE UPLOAD ENDPOINT
         router.push(`/notebook/${note_id}`);
       },
       onError: (error) => {

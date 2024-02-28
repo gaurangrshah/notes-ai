@@ -1,3 +1,4 @@
+import { ThemeProvider } from '@/components/ThemeProvider';
 import { Providers } from '@/components/providers';
 import { Toaster } from '@/components/ui/sonner';
 import { checkAuth } from '@/lib/auth/utils';
@@ -10,7 +11,7 @@ export default async function AppLayout({
 }) {
   await checkAuth();
   return (
-    <>
+    <ThemeProvider>
       <ClerkProvider>
         <Providers>
           <div className="flex h-screen">
@@ -22,6 +23,6 @@ export default async function AppLayout({
       </ClerkProvider>
 
       <Toaster richColors />
-    </>
+    </ThemeProvider>
   )
 }

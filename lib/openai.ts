@@ -1,7 +1,10 @@
 import { Configuration, OpenAIApi } from "openai-edge";
+import { uploadFileFromUrlToPublicRepo } from "@/lib/git";
+import { slugify } from "./utils";
+import { env } from "./env.mjs";
 
 const config = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: env.OPENAI_API_KEY,
 });
 
 const openai = new OpenAIApi(config);
@@ -31,7 +34,7 @@ export async function generateImagePrompt(name: string) {
   }
 }
 
-export async function generateImage(image_description: string) {
+export async function generateImage(image_description: string, name: string) {
   try {
     const response = await openai.createImage({
       // calling the DALL-E api
@@ -41,7 +44,19 @@ export async function generateImage(image_description: string) {
     });
     const data = await response.json();
     const image_url = data.data[0].url;
-    return image_url as string;
+    console.log("uploading image from", image_url);
+    const timestamp = new Date().toISOString().replace(/:/g, "-");
+
+    const result = uploadFileFromUrlToPublicRepo({
+      repoOwner: "gaurangrshah",
+      imageUrl: image_url,
+      fileName: slugify(name) + "-" + timestamp + ".jpg",
+    });
+
+    const cdnlink = await result;
+    console.log("🚀 | cdnlink:", cdnlink);
+    return cdnlink;
+    // return image_url as string;
   } catch (error) {
     console.error(error);
   }
