@@ -68,16 +68,16 @@ export function CreateNoteDialog(props: Props) {
                 toast("Failed to backup image to github");
                 return;
               }
+              console.log('updating note')
+              const { note: n } = await updateNote(note.id, {
+                name: note.name,
+                imageUrl: cdnLink
+              })
 
-              await updateNoteAction(
-                {
-                  id: note.id,
-                  name: note.name,
-                  imageUrl: cdnLink
-                })
-
-              toast("Image backed up to github");
-              router.push(`/notebook/${note.id}`);
+              if (n) {
+                toast("Image backed up to github");
+                router.push(`/notebook/${note.id}`);
+              }
             },
             onError: (error) => {
               console.error(error);

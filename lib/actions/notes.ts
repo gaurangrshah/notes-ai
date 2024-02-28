@@ -41,7 +41,7 @@ export const updateNoteAction = async (input: Partial<UpdateNoteParams>) => {
       ...input,
       userId: session?.user.id!,
     });
-    await updateNote(payload.id, payload);
+    const { note } = await updateNote(payload.id, payload);
     revalidateNotes();
   } catch (e) {
     return handleErrors(e);
