@@ -9,6 +9,8 @@ const config = new Configuration({
 
 const openai = new OpenAIApi(config);
 
+const defaultPrompt = `Create a thumbnail image for a digital notebook`;
+
 export async function generateImagePrompt(name: string) {
   try {
     const response = await openai.createChatCompletion({
@@ -26,7 +28,7 @@ export async function generateImagePrompt(name: string) {
       ],
     });
     const data = await response.json();
-    const image_description = data.choices[0].message.content;
+    const image_description = data.choices[0].message.content ?? defaultPrompt;
     return image_description as string;
   } catch (error) {
     console.log(error);

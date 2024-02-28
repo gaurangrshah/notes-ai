@@ -14,12 +14,12 @@ type uploadFileFromUrlToPublicRepoProps = {
 export async function uploadFileFromUrlToPublicRepo({
   imageUrl,
   fileName,
-  repoOwner = env.GITHUB_REPO_OWNER!,
-  branch = env.GITHUB_REPO_BRANCH!,
-  repoName = env.GITHUB_REPO_NAME!,
+  repoOwner = env.GITHUB_REPO_OWNER,
+  branch = env.GITHUB_REPO_BRANCH,
+  repoName = env.GITHUB_REPO_NAME,
 }: uploadFileFromUrlToPublicRepoProps): Promise<string | void> {
   // Construct the API endpoint URL
-  const currentDir = env.GITHUB_REPO_PATH!;
+  const currentDir = env.GITHUB_REPO_PATH;
   const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${currentDir}/${fileName}`;
   try {
     // Fetch the image data from the URL
@@ -58,9 +58,9 @@ export async function uploadFileFromUrlToPublicRepo({
     };
 
     const response = await fetch(url, options);
-    console.log("🚀 | response:", await response.json());
 
     if (!response.ok) {
+      console.log("🚀 | response:", await response.json());
       throw new Error(`Error uploading image: ${await response.text()}`);
     }
 
@@ -68,7 +68,7 @@ export async function uploadFileFromUrlToPublicRepo({
     const cdnlink = `https://cdn.jsdelivr.net/gh/${repoOwner}/${repoName}@${branch}/${currentDir}/${fileName}`;
 
     console.log(
-      `Image uploaded successfully to ${repoOwner}/${repoName}/${fileName}`,
+      `🌁 Image uploaded successfully to ${repoOwner}/${repoName}/${fileName}`,
       cdnlink
     );
 

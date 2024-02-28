@@ -10,6 +10,7 @@ import { Note } from "@/lib/db/schema/notes";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useCompletion } from "ai/react";
 import { updateNote } from "@/lib/api/notes/mutations";
+import { updateNoteAction } from "@/lib/actions/notes";
 
 type Props = { note: Note };
 
@@ -22,7 +23,7 @@ const TipTapEditor = ({ note }: Props) => {
   });
   const saveNote = useMutation({
     mutationFn: async () => {
-      return await updateNote(note.id, {
+      return await updateNoteAction({
         ...note,
         editorState,
       })

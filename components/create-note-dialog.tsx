@@ -7,10 +7,10 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogClose
 } from "./ui/dialog";
 import { Loader2, Plus } from "lucide-react";
 import { Input } from "./ui/input";
-// import axios from "axios";
 import { Button } from "./ui/button";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
@@ -18,18 +18,16 @@ import { toast } from "sonner";
 import { uploadFileFromUrlToPublicRepo } from "@/lib/git";
 import { slugify } from "@/lib/utils";
 import { getNoteById } from "@/lib/api/notes/queries";
-import { DbNote } from "@/lib/db/schema/notes";
+import { DbNote, Note } from "@/lib/db/schema/notes";
 import { updateNote } from "@/lib/api/notes/mutations";
+import { updateNoteAction } from "@/lib/actions/notes";
+import { createNotebookAction } from "@/lib/actions/dash/create-notebook";
 
 type Props = {};
 
 export function CreateNoteDialog(props: Props) {
   const router = useRouter();
   const [input, setInput] = React.useState("");
-
-
-
-
 
   const uploadToGithub = useMutation({
     mutationFn: async ({ image_url, name }: { image_url: string; name: string; }) => {
@@ -43,19 +41,10 @@ export function CreateNoteDialog(props: Props) {
     }
   })
 
-
   const createNotebook = useMutation({
     mutationFn: async () => {
-      const response = await fetch("/api/create-notebook", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: input,
-        }),
-      });
-      return await response.json() as Promise<{ note_id: string; name: string; imageUrl: string }>;
+      const notebook = await createNotebookAction(input);
+      return notebook as Note
     }
   });
 
@@ -80,16 +69,15 @@ export function CreateNoteDialog(props: Props) {
                 return;
               }
 
-              const updatedNote = await updateNote(note.note_id,
+              await updateNoteAction(
                 {
+                  id: note.id,
                   name: note.name,
                   imageUrl: cdnLink
                 })
 
-              if (updatedNote) {
-                toast("Image backed up to github");
-                router.push(`/notebook/${note.note_id}`);
-              }
+              toast("Image backed up to github");
+              router.push(`/notebook/${note.id}`);
             },
             onError: (error) => {
               console.error(error);
@@ -97,10 +85,8 @@ export function CreateNoteDialog(props: Props) {
             },
           })
 
-
-
-          toast("Image backed up to github");
-          router.push(`/notebook/${note.note_id}`);
+          toast("Notebook creation completed");
+          router.push(`/notebook/${note.id}`);
         }
       },
       onError: (error) => {
@@ -134,6 +120,7 @@ export function CreateNoteDialog(props: Props) {
             placeholder="Name..."
           />
           <div className="flex items-center gap-2 mt-4">
+            <DialogClose />
             <Button
               type="submit"
               className="bg-green-600 ml-auto"

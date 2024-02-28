@@ -1,11 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import {
-  createNote,
-  deleteNote,
-  updateNote,
-} from "@/lib/api/notes/mutations";
+import { createNote, deleteNote, updateNote } from "@/lib/api/notes/mutations";
 import {
   NoteId,
   NewNoteParams,
@@ -14,6 +10,7 @@ import {
   insertNoteParams,
   updateNoteParams,
 } from "@/lib/db/schema/notes";
+import { getUserAuth } from "../auth/utils";
 
 const handleErrors = (e: unknown) => {
   const errMsg = "Error, please try again.";
@@ -37,9 +34,13 @@ export const createNoteAction = async (input: NewNoteParams) => {
   }
 };
 
-export const updateNoteAction = async (input: UpdateNoteParams) => {
+export const updateNoteAction = async (input: Partial<UpdateNoteParams>) => {
   try {
-    const payload = updateNoteParams.parse(input);
+    const { session } = await getUserAuth();
+    const payload = updateNoteParams.parse({
+      ...input,
+      userId: session?.user.id!,
+    });
     await updateNote(payload.id, payload);
     revalidateNotes();
   } catch (e) {

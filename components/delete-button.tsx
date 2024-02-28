@@ -4,6 +4,7 @@ import { Button } from "./ui/button";
 import { Trash } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import { deleteNoteAction } from "@/lib/actions/notes";
 
 type Props = {
   noteId: string;
@@ -12,19 +13,7 @@ type Props = {
 export function DeleteButton({ noteId }: Props) {
   const router = useRouter();
   const deleteNote = useMutation({
-    mutationFn: async () => {
-      const response = await fetch("/api/delete-note", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          noteId,
-        }),
-      });
-      const data = await response.json();
-      return data;
-    },
+    mutationFn: async () => await deleteNoteAction(noteId),
   });
   return (
     <Button
