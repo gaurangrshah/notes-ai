@@ -1,5 +1,6 @@
 "use server";
 
+import { updateNote } from "./api/notes/mutations";
 import { env } from "./env.mjs";
 
 type uploadFileFromUrlToPublicRepoProps = {
@@ -32,6 +33,10 @@ export async function uploadFileFromUrlToPublicRepo({
     // Convert image data to ArrayBuffer (adjust for different content types)
     const imageArrayBuffer = await imageResponse.arrayBuffer();
 
+    if (!imageArrayBuffer) {
+      throw new Error("Failed to convert image to ArrayBuffer");
+    }
+
     // Encode the image data in base64
     const encodedContent = Buffer.from(imageArrayBuffer).toString("base64");
 
@@ -53,6 +58,7 @@ export async function uploadFileFromUrlToPublicRepo({
     };
 
     const response = await fetch(url, options);
+    console.log("🚀 | response:", await response.json());
 
     if (!response.ok) {
       throw new Error(`Error uploading image: ${await response.text()}`);

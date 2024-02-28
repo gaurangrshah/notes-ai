@@ -44,19 +44,7 @@ export async function generateImage(image_description: string, name: string) {
     });
     const data = await response.json();
     const image_url = data.data[0].url;
-    console.log("uploading image from", image_url);
-    const timestamp = new Date().toISOString().replace(/:/g, "-");
-
-    const result = uploadFileFromUrlToPublicRepo({
-      repoOwner: "gaurangrshah",
-      imageUrl: image_url,
-      fileName: slugify(name) + "-" + timestamp + ".jpg",
-    });
-
-    const cdnlink = await result;
-    console.log("🚀 | cdnlink:", cdnlink);
-    return cdnlink;
-    // return image_url as string;
+    return image_url as string;
   } catch (error) {
     console.error(error);
   }

@@ -15,12 +15,35 @@ import { Button } from "./ui/button";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { uploadFileFromUrlToPublicRepo } from "@/lib/git";
+import { slugify } from "@/lib/utils";
+import { getNoteById } from "@/lib/api/notes/queries";
+import { DbNote } from "@/lib/db/schema/notes";
+import { updateNote } from "@/lib/api/notes/mutations";
 
 type Props = {};
 
 export function CreateNoteDialog(props: Props) {
   const router = useRouter();
   const [input, setInput] = React.useState("");
+
+
+
+
+
+  const uploadToGithub = useMutation({
+    mutationFn: async ({ image_url, name }: { image_url: string; name: string; }) => {
+      const timestamp = new Date().toISOString().replace(/:/g, "-");
+      const result = await uploadFileFromUrlToPublicRepo({
+        repoOwner: "gaurangrshah",
+        imageUrl: image_url,
+        fileName: slugify(name) + "-" + timestamp + ".jpg",
+      });
+      return await result;
+    }
+  })
+
+
   const createNotebook = useMutation({
     mutationFn: async () => {
       const response = await fetch("/api/create-notebook", {
@@ -32,7 +55,7 @@ export function CreateNoteDialog(props: Props) {
           name: input,
         }),
       });
-      return await response.json() as Promise<{ note_id: string }>;
+      return await response.json() as Promise<{ note_id: string; name: string; imageUrl: string }>;
     }
   });
 
@@ -43,10 +66,42 @@ export function CreateNoteDialog(props: Props) {
       return;
     }
     createNotebook.mutate(undefined, {
-      onSuccess: ({ note_id }) => {
+      onSuccess: async (note) => {
         // hit another endpoint to upload the temp dalle-3 url to permanent url
-        toast("Notebook created successfully"); // @TODO: REMOVE UPLOAD ENDPOINT
-        router.push(`/notebook/${note_id}`);
+        toast("Notebook created successfully");
+        if (note.imageUrl) {
+          uploadToGithub.mutate({
+            image_url: note.imageUrl!,
+            name: note.name,
+          }, {
+            onSuccess: async (cdnLink) => {
+              if (!cdnLink) {
+                toast("Failed to backup image to github");
+                return;
+              }
+
+              const updatedNote = await updateNote(note.note_id,
+                {
+                  name: note.name,
+                  imageUrl: cdnLink
+                })
+
+              if (updatedNote) {
+                toast("Image backed up to github");
+                router.push(`/notebook/${note.note_id}`);
+              }
+            },
+            onError: (error) => {
+              console.error(error);
+              toast("Failed to create new notebook");
+            },
+          })
+
+
+
+          toast("Image backed up to github");
+          router.push(`/notebook/${note.note_id}`);
+        }
       },
       onError: (error) => {
         console.error(error);

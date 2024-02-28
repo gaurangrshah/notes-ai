@@ -9,6 +9,7 @@ import Text from "@tiptap/extension-text";
 import { Note } from "@/lib/db/schema/notes";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useCompletion } from "ai/react";
+import { updateNote } from "@/lib/api/notes/mutations";
 
 type Props = { note: Note };
 
@@ -21,18 +22,10 @@ const TipTapEditor = ({ note }: Props) => {
   });
   const saveNote = useMutation({
     mutationFn: async () => {
-      const response = await fetch("/api/save-note", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          noteId: note.id,
-          editorState,
-        }),
-      });
-      const data = await response.json();
-      return data;
+      return await updateNote(note.id, {
+        ...note,
+        editorState,
+      })
     },
   });
   const customText = Text.extend({

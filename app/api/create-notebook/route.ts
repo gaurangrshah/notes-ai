@@ -19,6 +19,7 @@ export async function POST(req: Request) {
       status: 500,
     });
   }
+
   const image_url = await generateImage(image_description, name);
   if (!image_url) {
     return new NextResponse("failed to generate image ", {
@@ -35,9 +36,12 @@ export async function POST(req: Request) {
     })
     .returning({
       insertedId: $notes.id,
+      name: $notes.name,
     });
 
   return NextResponse.json({
     note_id: note_ids[0].insertedId,
+    name: note_ids[0].name,
+    imageUrl: image_url,
   });
 }

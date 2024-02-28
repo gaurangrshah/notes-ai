@@ -1,22 +1,28 @@
+"use server";
+
 import { db } from "@/lib/db/index";
 import { eq, and } from "drizzle-orm";
 import { getUserAuth } from "@/lib/auth/utils";
-import { type NoteId, noteIdSchema, notes } from "@/lib/db/schema/notes";
+import { type NoteId, noteIdSchema, notes, Note } from "@/lib/db/schema/notes";
 
 export const getNotes = async () => {
   const { session } = await getUserAuth();
-  const rows = await db.select().from(notes).where(eq(notes.userId, session?.user.id!));
-  const n = rows
+  const rows = await db
+    .select()
+    .from(notes)
+    .where(eq(notes.userId, session?.user.id!));
+  const n = rows;
   return { notes: n };
 };
 
 export const getNoteById = async (id: NoteId) => {
   const { session } = await getUserAuth();
   const { id: noteId } = noteIdSchema.parse({ id });
-  const [row] = await db.select().from(notes).where(and(eq(notes.id, noteId), eq(notes.userId, session?.user.id!)));
-  if (row === undefined) return {};
+  const [row] = await db
+    .select()
+    .from(notes)
+    .where(and(eq(notes.id, noteId), eq(notes.userId, session?.user.id!)));
+
   const n = row;
-  return { note: n };
+  return { note: n ?? null };
 };
-
-
