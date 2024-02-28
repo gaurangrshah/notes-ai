@@ -2,8 +2,8 @@ import { OpenAIApi, Configuration } from "openai-edge";
 import { OpenAIStream, StreamingTextResponse } from "ai";
 import { env } from "@/lib/env.mjs";
 
-export const runtime = "edge";
-export const preferredRegion = ["cle1", "iad1"];
+// export const runtime = "edge";
+// export const preferredRegion = ["cle1", "iad1"];
 
 const config = new Configuration({
   apiKey: env.OPENAI_API_KEY,
