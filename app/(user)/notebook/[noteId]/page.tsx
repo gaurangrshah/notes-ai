@@ -18,7 +18,7 @@ type Props = {
 export default async function NotebookPage({ params: { noteId } }: Props) {
   const { userId } = await auth();
   if (!userId) {
-    return redirect("/dashboard");
+    return redirect("/dash");
   }
   const user = await clerkClient.users.getUser(userId);
   const notes = await db
@@ -27,7 +27,7 @@ export default async function NotebookPage({ params: { noteId } }: Props) {
     .where(and(eq($notes.id, noteId), eq($notes.userId, userId)));
 
   if (notes.length != 1) {
-    return redirect("/dashboard");
+    return redirect("/dash");
   }
   const note = notes[0];
 
