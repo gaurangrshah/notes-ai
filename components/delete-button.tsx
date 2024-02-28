@@ -38,7 +38,7 @@ export function DeleteButton({ noteId }: Props) {
         if (!confirm) return;
         deleteNote.mutate(undefined, {
           onSuccess: () => {
-            router.push("/dashboard");
+            router.push("/dash");
           },
           onError: (err) => {
             console.error(err);

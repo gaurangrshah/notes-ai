@@ -6,5 +6,5 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
   const { noteId } = await req.json();
   await db.delete($notes).where(eq($notes.id, noteId));
-  return new NextResponse("ok", { status: 200 });
+  return NextResponse.json({ message: "ok", status: 200 });
 }
