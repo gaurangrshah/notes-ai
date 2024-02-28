@@ -19,7 +19,7 @@ export async function createNotebook(
   if (!image_description) {
     throw new Error("failed to generate image description");
   }
-  const image_url = await generateImage(image_description);
+  const image_url = await generateImage(image_description, name);
   if (!image_url) {
     throw new Error("failed to generate image");
   }
