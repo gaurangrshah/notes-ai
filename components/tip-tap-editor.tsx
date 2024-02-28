@@ -50,7 +50,9 @@ const TipTapEditor = ({ note }: Props) => {
 
   const editor = useEditor({
     autofocus: true,
-    extensions: [StarterKit, customText],
+    extensions: [StarterKit.configure({
+      text: false
+    }), customText],
     content: editorState,
     onUpdate: ({ editor }) => {
       setEditorState(editor.getHTML());
@@ -87,7 +89,7 @@ const TipTapEditor = ({ note }: Props) => {
   }, [debouncedEditorState]);
   return (
     <>
-      <div className="flex">
+      <div className="flex justify-between">
         {editor && <TipTapMenuBar editor={editor} />}
         <Button disabled variant={"outline"}>
           {saveNote.isPending ? "Saving..." : "Saved"}
