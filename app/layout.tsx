@@ -2,6 +2,7 @@ import './globals.css';
 
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import Script from 'next/script';
 
 import { ThemeProvider } from '@/components/ThemeProvider';
 
@@ -21,6 +22,12 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>{children}</ThemeProvider>
+        <Script
+          defer
+          src="https://umami.internal.muhaha.dev/script.js"
+          data-website-id="3ed76a05-ae33-42c0-a0be-8cb5f9a77e1d"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
