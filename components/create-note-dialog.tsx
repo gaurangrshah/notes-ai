@@ -33,7 +33,6 @@ export function CreateNoteDialog(props: Props) {
     mutationFn: async ({ image_url, name }: { image_url: string; name: string; }) => {
       const timestamp = new Date().toISOString().replace(/:/g, "-");
       const result = await uploadFileFromUrlToPublicRepo({
-        repoOwner: "gaurangrshah",
         imageUrl: image_url,
         fileName: slugify(name) + "-" + timestamp + ".jpg",
       });
@@ -56,36 +55,30 @@ export function CreateNoteDialog(props: Props) {
     }
     createNotebook.mutate(undefined, {
       onSuccess: async (note) => {
-        // hit another endpoint to upload the temp dalle-3 url to permanent url
         toast("Notebook created successfully");
         if (note.imageUrl) {
+          // Backup DALL-E image to GitHub for persistence
           uploadToGithub.mutate({
-            image_url: note.imageUrl!,
+            image_url: note.imageUrl,
             name: note.name,
           }, {
             onSuccess: async (cdnLink) => {
-              if (!cdnLink) {
-                toast("Failed to backup image to github");
-                return;
+              if (cdnLink) {
+                await updateNote(note.id, {
+                  name: note.name,
+                  imageUrl: cdnLink
+                });
+                toast("Image backed up to GitHub");
               }
-              console.log('updating note')
-              const { note: n } = await updateNote(note.id, {
-                name: note.name,
-                imageUrl: cdnLink
-              })
-
-              if (n) {
-                toast("Image backed up to github");
-                router.push(`/notebook/${note.id}`);
-              }
+              router.push(`/notebook/${note.id}`);
             },
             onError: (error) => {
               console.error(error);
-              toast("Failed to create new notebook");
+              // Still navigate even if GitHub backup fails
+              router.push(`/notebook/${note.id}`);
             },
-          })
-
-          toast("Notebook creation completed");
+          });
+        } else {
           router.push(`/notebook/${note.id}`);
         }
       },

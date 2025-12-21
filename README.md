@@ -1,5 +1,19 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
+## Prerequisites
+
+### OpenAI API Key
+
+This app requires an OpenAI API key for AI-powered features:
+- **Text autocomplete** (Shift+A in editor) - uses GPT-3.5-turbo
+- **Notebook thumbnail generation** - uses DALL-E
+
+**Important:** OpenAI deprecated the old `sk-...` key format in 2024. You need a new key starting with `sk-proj-...`.
+
+1. Go to https://platform.openai.com/api-keys
+2. Create a new API key
+3. Add it to `.env.local` as `OPENAI_API_KEY=sk-proj-...`
+
 ## Getting Started
 
 First, run the development server:

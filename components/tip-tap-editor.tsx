@@ -44,6 +44,7 @@ const TipTapEditor = ({ note }: Props) => {
 
   const editor = useEditor({
     autofocus: true,
+    immediatelyRender: false,
     extensions: [StarterKit.configure({
       text: false
     }), customText],

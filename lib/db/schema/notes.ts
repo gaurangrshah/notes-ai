@@ -32,7 +32,7 @@ export const notes = pgTable(
   },
   (notes) => {
     return {
-      nameIndex: uniqueIndex("name_idx").on(notes.name),
+      nameUserIndex: uniqueIndex("name_user_idx").on(notes.name, notes.userId),
     };
   }
 );

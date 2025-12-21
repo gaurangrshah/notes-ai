@@ -15,9 +15,12 @@ import { getUserAuth } from "@/lib/auth/utils";
 
 export const createNote = async (note: NewNoteParams) => {
   const { session } = await getUserAuth();
+  if (!session?.user?.id) {
+    throw new Error("Unauthorized");
+  }
   const newNote = insertNoteSchema.parse({
     ...note,
-    userId: session?.user.id!,
+    userId: session.user.id,
   });
   try {
     const [n] = await db.insert(notes).values(newNote).returning();
@@ -34,16 +37,19 @@ export const updateNote = async (
   note: Partial<UpdateNoteParams>
 ) => {
   const { session } = await getUserAuth();
+  if (!session?.user?.id) {
+    throw new Error("Unauthorized");
+  }
   const { id: noteId } = noteIdSchema.parse({ id });
   const newNote = updateNoteSchema.parse({
     ...note,
-    userId: session?.user.id!,
+    userId: session.user.id,
   });
   try {
     const [n] = await db
       .update(notes)
       .set({ ...newNote, updatedAt: new Date() })
-      .where(and(eq(notes.id, noteId!), eq(notes.userId, session?.user.id!)))
+      .where(and(eq(notes.id, noteId!), eq(notes.userId, session.user.id)))
       .returning();
     return { note: n };
   } catch (err) {
@@ -55,11 +61,14 @@ export const updateNote = async (
 
 export const deleteNote = async (id: NoteId) => {
   const { session } = await getUserAuth();
+  if (!session?.user?.id) {
+    throw new Error("Unauthorized");
+  }
   const { id: noteId } = noteIdSchema.parse({ id });
   try {
     const [n] = await db
       .delete(notes)
-      .where(and(eq(notes.id, noteId!), eq(notes.userId, session?.user.id!)))
+      .where(and(eq(notes.id, noteId!), eq(notes.userId, session.user.id)))
       .returning();
     return { note: n };
   } catch (err) {

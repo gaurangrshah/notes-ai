@@ -37,9 +37,12 @@ export const createNoteAction = async (input: NewNoteParams) => {
 export const updateNoteAction = async (input: Partial<UpdateNoteParams>) => {
   try {
     const { session } = await getUserAuth();
+    if (!session?.user?.id) {
+      throw new Error("Unauthorized");
+    }
     const payload = updateNoteParams.parse({
       ...input,
-      userId: session?.user.id!,
+      userId: session.user.id,
     });
     const { note } = await updateNote(payload.id, payload);
     revalidateNotes();
