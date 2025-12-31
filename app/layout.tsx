@@ -24,7 +24,7 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>{children}</ThemeProvider>
         <Script
           defer
-          src="https://umami.internal.muhaha.dev/script.js"
+          src="https://analytics.h1a1ah.com/script.js"
           data-website-id="3ed76a05-ae33-42c0-a0be-8cb5f9a77e1d"
           strategy="afterInteractive"
         />
